@@ -1,3 +1,6 @@
+# Data
+*.csv
+
 # Vim
 *.swp
 
