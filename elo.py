@@ -32,6 +32,3 @@ def adjust_elo(first_elo, second_elo, winner, norm_factor=400, k_factor=32):
         return  
     return new_first, new_second, abs(adjustment)
 
-a,b,adj = adjust_elo(1550, 1450, "first", k_factor = 24)
-print a
-print b
