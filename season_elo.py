@@ -68,6 +68,8 @@ class Match:
 #  - Ignore scores
 #  - Report wins/losses as single games with results of 0 or 1
 #  - Report ties as single game with results of 0.5
+#
+# Format of output file is: match_number, team1, team2, winner, win_prob, elo_adj, new_winner_Elo, new_loser_elo
 def run_season(initial_elos, matches, output=None):
     if output != None:
         output_file = open(output, "w")
@@ -78,31 +80,47 @@ def run_season(initial_elos, matches, output=None):
 
     for i in range(len(matches)):
         match = matches[i]
-        print match.to_string()
         if not match.is_tie():
             winner = match.get_winner()
             loser = match.get_loser()
             new_winner_elo, new_loser_elo, adj, prob = elo.adjust_elo(elos[winner], elos[loser], "first")
             elos[winner] = new_winner_elo
-            elos[loser] = new_loser_elo 
+            elos[loser] = new_loser_elo
+            output_file.write(str(i) + "," + match.get_team1() + "," + match.get_team2() + "," + winner + "," + str(prob) + "," + str(adj) + "," + str(new_winner_elo) + "," + str(new_loser_elo) + "\n") 
         else:
             team1 = match.get_team1()
             team2 = match.get_team2()
             new_team1_elo, new_team2_elo, adj, prob = elo.adjust_elo(elos[team1], elos[team2], "tie")
             elos[team1] = new_team1_elo
             elos[team2] = new_team2_elo
-
+            output_file.write(str(i) + "," + str(match.get_team1()) + "," + str(match.get_team2()) + ",tie," + str(prob) + "," + str(adj) + "," + str(new_winner_elo) + "," + str(new_loser_elo) + "\n")
+    
     for team in elos:
         print str(team) + " ending with final Elo of " + str(elos[team])
-        
 
+    return elos
+
+# Loads a CSV of matches into a list of Match objects
+# Format for the CSV should be team1, team1_score, team2, team2_score
+def load_match_csv(input_loc):
+    input_file = open(input_loc, "r")
+    matches_as_lines = input_file.read().splitlines()
+    matches = []
+
+    for match_line in matches_as_lines:
+        match_data = match_line.split(",")
+        match = Match(match_data[0], float(match_data[1]), match_data[2], float(match_data[3]))
+        matches.append(match)
+    
+    """
+    print "Loaded the following mathces:"
+    for match in matches:
+        print match.to_string()
+    """
+
+    return matches
+
+
+matches = load_match_csv("input.csv")
 elos = {"A":1500, "B":1640, "C": 1350}
-
-match_sample = Match("A", 3, "B", 2)
-match_sample2 = Match("C", 4, "A", 1)
-match_sample3 = Match("A", 1, "B", 3)
-match_sample4 = Match("B", 5, "C", 1)
-match_sample5 = Match("B", 1, "C", 1)
-matches = [match_sample, match_sample2, match_sample3, match_sample4, match_sample5]
-
-run_season(elos, matches)
+run_season(elos, matches, "output.csv")
