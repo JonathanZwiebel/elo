@@ -120,7 +120,20 @@ def load_match_csv(input_loc):
 
     return matches
 
+# Loads a CSV of teams and Elo values
+# Format for the CSV should be team, elo
+def load_elo_csv(input_loc):
+    input_file = open(input_loc, "r")
+    teams_as_lines = input_file.read().splitlines()
+
+    elos = {}
+    for team_line in teams_as_lines:
+        team_data = team_line.split(",")
+        elos[team_data[0]] = float(team_data[1])
+    return elos
+
+
 
 matches = load_match_csv("input.csv")
-elos = {"A":1500, "B":1640, "C": 1350}
+elos = load_elo_csv("elos_input.csv")
 run_season(elos, matches, "output.csv")
