@@ -44,6 +44,12 @@ class Match:
 
     def get_loser(self):
         return self.loser
+    
+    def get_team1(self):
+        return self.team1
+
+    def get_team2(self):
+        return self.team2
 
     def get_wm(self):
         return self.wm
@@ -71,16 +77,20 @@ def run_season(initial_elos, matches, output=None):
         print str(team) + " starting with initial Elo of " + str(elos[team])
 
     for i in range(len(matches)):
-       match = matches[i]
-       print match.to_string()
-       winner = match.get_winner()
-       loser = match.get_loser()
-       new_winner_elo, new_loser_elo, adj = elo.adjust_elo(elos[winner], elos[loser], "first")
-       print winner + " elo adjusted by +" + str(adj) + " to " + str(new_winner_elo)
-       print loser + " elo adjusted by -" + str(adj) + " to " + str(new_loser_elo)
-       elos[winner] = new_winner_elo
-       elos[loser] = new_loser_elo
-       print ""
+        match = matches[i]
+        print match.to_string()
+        if not match.is_tie():
+            winner = match.get_winner()
+            loser = match.get_loser()
+            new_winner_elo, new_loser_elo, adj = elo.adjust_elo(elos[winner], elos[loser], "first")
+            elos[winner] = new_winner_elo
+            elos[loser] = new_loser_elo 
+        else:
+            team1 = match.get_team1()
+            team2 = match.get_team2()
+            new_team1_elo, new_team2_elo, adj = elo.adjust_elo(elos[team1], elos[team2], "tie")
+            elos[team1] = new_team1_elo
+            elos[team2] = new_team2_elo
 
     for team in elos:
         print str(team) + " ending with final Elo of " + str(elos[team])
@@ -92,6 +102,7 @@ match_sample = Match("A", 3, "B", 2)
 match_sample2 = Match("C", 4, "A", 1)
 match_sample3 = Match("A", 1, "B", 3)
 match_sample4 = Match("B", 5, "C", 1)
-matches = [match_sample, match_sample2, match_sample3, match_sample4]
+match_sample5 = Match("B", 1, "C", 1)
+matches = [match_sample, match_sample2, match_sample3, match_sample4, match_sample5]
 
 run_season(elos, matches)
