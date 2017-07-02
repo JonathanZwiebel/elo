@@ -82,13 +82,13 @@ def run_season(initial_elos, matches, output=None):
         if not match.is_tie():
             winner = match.get_winner()
             loser = match.get_loser()
-            new_winner_elo, new_loser_elo, adj = elo.adjust_elo(elos[winner], elos[loser], "first")
+            new_winner_elo, new_loser_elo, adj, prob = elo.adjust_elo(elos[winner], elos[loser], "first")
             elos[winner] = new_winner_elo
             elos[loser] = new_loser_elo 
         else:
             team1 = match.get_team1()
             team2 = match.get_team2()
-            new_team1_elo, new_team2_elo, adj = elo.adjust_elo(elos[team1], elos[team2], "tie")
+            new_team1_elo, new_team2_elo, adj, prob = elo.adjust_elo(elos[team1], elos[team2], "tie")
             elos[team1] = new_team1_elo
             elos[team2] = new_team2_elo
 

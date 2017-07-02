@@ -19,16 +19,18 @@ def adjust_elo(first_elo, second_elo, winner, norm_factor=400, k_factor=32):
         adjustment = (1 - first_wr) * k_factor
         new_first = first_elo + adjustment
         new_second = second_elo - adjustment
+        outcome_prob = first_wr
     elif winner == "second":
         adjustment = (1 - second_wr) * k_factor
         new_first = first_elo - adjustment
         new_second = second_elo + adjustment
+        outcome_prob = second_wr
     elif winner == "tie":
         adjustment = (0.5 - first_wr) * k_factor
         new_first = first_elo + adjustment
         new_second = second_elo - adjustment
+        outcome_prob = 0
     else:
         print "Illegal winner in adjust_elo() of " + winner
         return  
-    return new_first, new_second, abs(adjustment)
-
+    return new_first, new_second, abs(adjustment), outcome_prob
