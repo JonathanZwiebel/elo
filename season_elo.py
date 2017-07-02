@@ -70,9 +70,12 @@ class Match:
 #  - Report ties as single game with results of 0.5
 #
 # Format of output file is: match_number, team1, team2, winner, win_prob, elo_adj, new_winner_Elo, new_loser_elo
-def run_season(initial_elos, matches, output=None):
+def run_season(initial_elos, matches, output=None, final_elos_loc=None):
     if output != None:
         output_file = open(output, "w")
+
+    if final_elos_loc != None:
+        final_elos_file = open(final_elos_loc, "w")
 
     elos = initial_elos
     for team in elos:
@@ -96,8 +99,11 @@ def run_season(initial_elos, matches, output=None):
             output_file.write(str(i) + "," + str(match.get_team1()) + "," + str(match.get_team2()) + ",tie," + str(prob) + "," + str(adj) + "," + str(new_winner_elo) + "," + str(new_loser_elo) + "\n")
     
     for team in elos:
+        final_elos_file.write(team + "," + str(elos[team]) + "\n")
         print str(team) + " ending with final Elo of " + str(elos[team])
-
+    
+    output_file.close()
+    final_elos_file.close()
     return elos
 
 # Loads a CSV of matches into a list of Match objects
@@ -132,8 +138,10 @@ def load_elo_csv(input_loc):
         elos[team_data[0]] = float(team_data[1])
     return elos
 
+# Calls the run_season method but takes in CSVs instead of native objects
+def run_season_csvs(input_elos, input_matches, output_matches, output_elos=None):
+    matches = load_match_csv(input_matches)
+    elos = load_elo_csv(input_elos)
+    end_elos = run_season(elos, matches, output_matches, output_elos)
 
-
-matches = load_match_csv("input.csv")
-elos = load_elo_csv("elos_input.csv")
-run_season(elos, matches, "output.csv")
+run_season_csvs("elos_input.csv", "input.csv", "output.csv", "output_elos.csv")
